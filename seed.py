@@ -9,6 +9,7 @@ from model import connect_to_db, db
 from server import app
 
 
+
 def load_users():
     """Load users from u.user into database."""
 
@@ -43,6 +44,8 @@ def load_movies():
     for row in open("seed_data/u.item"):
         row = row.rstrip()
         movie_id, title, released_at, blank, imdb_url = row.split("|")[0:5]
+
+        title = title.split(" (")[0]
 
         movie = Movie(movie_id=movie_id,
                     title=title,
