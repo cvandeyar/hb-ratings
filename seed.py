@@ -7,6 +7,7 @@ from model import Movie
 
 from model import connect_to_db, db
 from server import app
+import datetime
 
 
 
@@ -47,9 +48,14 @@ def load_movies():
 
         title = title.split(" (")[0]
 
+        if released_at:
+            released_date = datetime.datetime.strptime(released_at, "%d-%b-%Y")
+        else:
+            released_date = None
+
         movie = Movie(movie_id=movie_id,
                     title=title,
-                    released_at=released_at,
+                    released_at=released_date,
                     imdb_url=imdb_url)
 
         # We need to add to the session or it won't ever be stored
@@ -87,7 +93,11 @@ def set_val_user_id():
 
     # Set the value for the next user_id to be max_id + 1
     query = "SELECT setval('users_user_id_seq', :new_id)"
+
+    # db.session.execute("SELECT setval('users_user_id_seq', :new_id)", {'new_id': max_id + 1}) #### ,:_____ acts like .format
+
     db.session.execute(query, {'new_id': max_id + 1})
+
     db.session.commit()
 
 
