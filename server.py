@@ -2,10 +2,11 @@
 
 from jinja2 import StrictUndefined
 
-from flask import Flask
+from flask import (Flask, render_template, redirect, request, flash,
+                   session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db
+from model import User, Rating, Movie, connect_to_db, db
 
 
 app = Flask(__name__)
@@ -22,7 +23,46 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     """Homepage."""
-    return "<html><body>Placeholder for the homepage.</body></html>"
+    return render_template("homepage.html")
+
+@app.route('/users')
+def user_list():
+    """show list of users."""
+
+    users = User.query.all()
+    return render_template("user_list.html", users=users)
+
+
+@app.route('/registration')
+def registration_form():
+    """ register new users """
+    return render_template("register.html")
+
+@app.route('/add-user', methods=["POST"])
+def add_new_user():
+    """ add new users """
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    registered_email = User.query.filter(User.email == email)
+
+    if registered_email:
+        flash("Email already taken. Please try logging in")
+        return redirect('/registration')
+
+    else:
+        new_user = User(email=email,password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("You have been added. Welcome")
+        return redirect('/registration')
+
+@app.route('/login')
+def login():
+    """ login """
+
+    return render_template("login.html")
 
 
 if __name__ == "__main__":
@@ -31,7 +71,7 @@ if __name__ == "__main__":
     app.debug = True
     # make sure templates, etc. are not cached in debug mode
     app.jinja_env.auto_reload = app.debug
-
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     connect_to_db(app)
 
     # Use the DebugToolbar
