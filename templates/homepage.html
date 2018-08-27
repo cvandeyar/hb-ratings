@@ -1,6 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
+    <div>
+    {% if session['userid'] %}
+        <h2> Welcome, {{ session['userid'] }} </h2>
+        <a href='/logout'> logout </a>
+    {% else %}
+        <a href='/login'> login </a>
+
+    {% endif %}
+</div>
+
+
+
 <h1>Ratings</h1>
 
 <h2>Movies</h2>
