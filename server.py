@@ -123,6 +123,34 @@ def movie_page():
 
     return render_template('movie_page.html', movieinfo=movieinfo, avgrating=avgrating)
 
+@app.route('/rate-movie', methods = ['POST'])
+def rate_movie():
+    """user rates the movie"""
+
+    new_movie_rating = int(request.form.get('movie_rating'))
+    movie_id = int(request.form.get('movie_id'))
+    user_id = User.query.filter(User.email == session['userid']).first()
+    existing_rating = Rating.query.filter(Rating.score == new_movie_rating).first()
+
+    if existing_rating:
+        existing_rating.score = new_movie_rating
+        # replace_score = Rating(score=new_movie_rating, movie_id=movie_id, user_id=user_id.user_id)
+        db.session.add(existing_rating)
+        db.session.commit()
+        print('replace: ', existing_rating)
+
+        return redirect('movie-list')
+
+    else:
+        new_score = Rating(score=new_movie_rating, movie_id=movie_id, user_id=user_id.user_id)
+        db.session.add(new_score)
+        db.session.commit()
+        print(new_score)
+
+        return redirect('movie-list')
+
+
+
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
@@ -136,3 +164,5 @@ if __name__ == "__main__":
     DebugToolbarExtension(app)
 
     app.run(port=5000, host='0.0.0.0')
+
+
