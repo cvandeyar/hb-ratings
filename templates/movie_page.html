@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h2>Title: {{ movieinfo.title }}</h2>
+    Release Date: {{ movieinfo.released_at }} <br>
+    IMDB URL: {{ movieinfo.imdb_url }} <br>
+    Average Rating: {{avgrating}}
+    <br><br>
+
+  <h3>Rate Movie</h3>
+  <form action='rate-movie' method='POST'>
+    Rating:
+    <select name='movie_rating'>
+      <option value='1'>1</option>
+      <option value='2'>2</option>
+      <option value='3'>3</option>
+      <option value='4'>4</option>
+      <option value='5'>5</option>
+    </select>
+    <input type='submit'>
+    <input name='movie_id' value='{{ movieinfo.movie_id }}' hidden>
+  </form>
+
+
+
+{% endblock %}
+
